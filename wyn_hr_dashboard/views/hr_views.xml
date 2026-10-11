@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_hr_dashboard" model="ir.actions.client">
+        <field name="name">HR Dashboard</field>
+        <field name="tag">wyn_hr_dashboard.action_hr_dashboard</field>
+        <field name="target">main</field>
+    </record>
+
+    <menuitem
+        id="menu_hr_dashboard"
+        name="Dashboard"
+        parent="hr.menu_hr_root"
+        action="action_hr_dashboard"
+        groups="hr.group_hr_manager"
+        sequence="1"
+    />
+</odoo>

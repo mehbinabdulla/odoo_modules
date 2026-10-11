@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+
+  <t t-name="wyn_hr_dashboard.LocationDropdown">
+    <div class="wyn_hr_location_dropdown_wrapper">
+      <div class="wyn_hr_panel_badge cursor-pointer" t-on-click="toggle">
+        <span t-esc="selectedName" />
+        <i t-attf-class="fa fa-chevron-down ms-2 transition-all #{state.isOpen ? 'rotate-180' : ''}" />
+      </div>
+
+      <div t-if="state.isOpen" class="wyn_hr_custom_dropdown_menu">
+        <div class="wyn_hr_dropdown_item" t-att-class="props.selectedId === 'all' ? 'active' : ''" t-on-click="() => this.select('all')">
+          <span>All Locations</span>
+          <i t-if="props.selectedId === 'all'" class="fa fa-check" />
+        </div>
+        <t t-foreach="props.options" t-as="loc" t-key="loc.id">
+          <div class="wyn_hr_dropdown_item" t-att-class="props.selectedId == loc.id ? 'active' : ''" t-on-click="() => this.select(loc.id)">
+            <div class="d-flex flex-column">
+              <span t-esc="loc.name" />
+              <span class="wyn_hr_dropdown_count" t-esc="loc.count + ' Employees'" />
+            </div>
+            <i t-if="props.selectedId == loc.id" class="fa fa-check" />
+          </div>
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+
+  <t t-name="wyn_hr_dashboard.HrDashboard">
+    <div class="wyn_hr_dashboard">
+
+      <div class="wyn_hr_dashboard_header">
+        <h1>Hello there,<br />
+          <span><t t-esc="state.userName" />.</span>
+        </h1>
+        <div class="wyn_hr_dashboard_date_wrapper">
+          <div class="wyn_hr_dashboard_day x_wd_display_fireworks_01" t-esc="state.today.day" />
+          <div class="wyn_hr_dashboard_date" t-esc="state.today.date" />
+        </div>
+      </div>
+
+      <t t-if="state.loading">
+        <div class="wyn_hr_loading">
+          <i class="fa fa-circle-o-notch" />
+          <span>Loading dashboard data…</span>
+        </div>
+      </t>
+
+      <t t-else="">
+
+        <div class="wyn_hr_stat_grid">
+          <div class="wyn_hr_stat_card" t-on-click="() => this._openEmployeeList()">
+            <div class="wyn_hr_stat_icon">
+              <i class="fa fa-users" />
+            </div>
+            <div class="wyn_hr_stat_value" t-esc="state.totalEmployees" />
+            <div class="wyn_hr_stat_label">Total Employees</div>
+          </div>
+
+          <div class="wyn_hr_stat_card" style="border-left-color: #118C42;"
+            t-on-click="() => this._openAttendanceList()">
+            <div class="wyn_hr_stat_icon" style="background-color: #D6FAE4;">
+              <i class="fa fa-check-circle" style="color: #118C42;" />
+            </div>
+            <div class="wyn_hr_stat_value" t-esc="state.presentToday" />
+            <div class="wyn_hr_stat_label" style="color: #094621;">Present Today</div>
+          </div>
+
+          <div class="wyn_hr_stat_card" style="border-left-color: #D42A46;"
+            t-on-click="() => this._openLeaveList('on_leave')">
+            <div class="wyn_hr_stat_icon" style="background-color: #FAE5E9;">
+              <i class="fa fa-plane" style="color: #D42A46;" />
+            </div>
+            <div class="wyn_hr_stat_value" t-esc="state.onLeave" />
+            <div class="wyn_hr_stat_label" style="color: #6A1523;">On Leave</div>
+          </div>
+
+          <div class="wyn_hr_stat_card" style="border-left-color: #C48A17;"
+            t-on-click="() => this._openLeaveList('confirm')">
+            <div class="wyn_hr_stat_icon" style="background-color: #FBF2DE;">
+              <i class="fa fa-calendar-check-o" style="color: #C48A17;" />
+            </div>
+            <div class="wyn_hr_stat_value" t-esc="state.pendingLeaves" />
+            <div class="wyn_hr_stat_label" style="color: #62450B;">Pending Time Off</div>
+          </div>
+
+          <div class="wyn_hr_stat_card" style="border-left-color: #34A4CA;"
+            t-on-click="() => this._openAllocationList()">
+            <div class="wyn_hr_stat_icon" style="background-color: #E7F4F9;">
+              <i class="fa fa-plus-square" style="color: #34A4CA;" />
+            </div>
+            <div class="wyn_hr_stat_value" t-esc="state.pendingAllocations" />
+            <div class="wyn_hr_stat_label" style="color: #1A5265;">Pending Allocations</div>
+          </div>
+        </div>
+
+        <div class="wyn_hr_dashboard_row">
+          <div class="wyn_hr_panel">
+            <div class="wyn_hr_panel_header graph">
+              <span class="wyn_hr_panel_title">Attendance vs. Leave</span>
+              <div class="wyn_hr_period_switch">
+                <button
+                  t-attf-class="#{state.graphPeriod === 'week' ? 'active' : ''}"
+                  t-on-click="() => this._switchPeriod('week')"
+                >Last Week</button>
+                <button
+                  t-attf-class="#{state.graphPeriod === 'month' ? 'active' : ''}"
+                  t-on-click="() => this._switchPeriod('month')"
+                >Last Month</button>
+              </div>
+            </div>
+            <div class="wyn_hr_panel_body" style="padding: 24px; position: relative;">
+              <t t-if="!hasAttendanceData">
+                <div class="wyn_hr_chart_placeholder">
+                  <i class="fa fa-line-chart" />
+                  <span>No attendance data available for the selected period</span>
+                </div>
+              </t>
+              <canvas t-else="" t-ref="attendanceChart" />
+            </div>
+          </div>
+          <div class="wyn_hr_panel">
+            <div class="wyn_hr_panel_header">
+              <span class="wyn_hr_panel_title">Today's Attendance</span>
+              <span class="wyn_hr_panel_badge" t-esc="state.presentToday + ' Present'" />
+            </div>
+            <div class="wyn_hr_panel_body">
+              <t t-if="state.attendanceList.length === 0">
+                <div class="wyn_hr_chart_placeholder">
+                  <i class="fa fa-id-card-o" />
+                  <span>No attendance records yet</span>
+                </div>
+              </t>
+              <div class="d-flex flex-column flex-grow-1">
+                <t t-foreach="state.attendanceList" t-as="att" t-key="att.id">
+                  <div class="wyn_hr_list_row cursor-pointer"
+                    t-on-click="() => this._openAttendance(att.id, att.employee)">
+                    <div class="wyn_hr_avatar" t-esc="att.employeeImg ? '' : att.initials"
+                      t-att-style="att.employeeImg ? 'background-image: url(' + att.employeeImg + '); background-size: cover; background-position: center;' : ''" />
+                    <div class="wyn_hr_list_info">
+                      <div class="wyn_hr_list_name" t-esc="att.employee" />
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="wyn_hr_list_sub"
+                          t-esc="att.checkIn + (att.checkOut ? '  →  ' + att.checkOut : '  (checked in)')" />
+                        <div class="wyn_hr_list_sub" t-esc="`(${att.workHours})`" />
+                      </div>
+                    </div>
+                    <span t-attf-class="wyn_hr_badge #{att.status}">
+                      <t t-esc="att.statusLabel" />
+                    </span>
+                  </div>
+                </t>
+              </div>
+
+            </div>
+            <DashboardPagination
+              currentPage="state.attendancePage"
+              totalPages="totalAttendancePages"
+              onPageChange="(p) => this._changePage('attendance', p)"
+            />
+          </div>
+          <div class="wyn_hr_panel">
+            <div class="wyn_hr_panel_header">
+              <span class="wyn_hr_panel_title">Pending Leave Requests</span>
+              <span class="wyn_hr_panel_badge" t-esc="state.pendingLeaves + ' Pending'" />
+            </div>
+            <div class="wyn_hr_panel_body">
+              <t t-if="state.leaveRequests.length === 0">
+                <div class="wyn_hr_chart_placeholder">
+                  <i class="fa fa-calendar-o" />
+                  <span>No pending leave requests</span>
+                </div>
+              </t>
+              <div class="d-flex flex-column flex-grow-1">
+                <t t-foreach="state.leaveRequests" t-as="leave" t-key="leave.id">
+                  <div class="wyn_hr_list_row cursor-pointer"
+                    t-on-click="() => this._openLeaveRequest(leave.id, leave.employee)">
+                    <div class="wyn_hr_avatar" t-esc="leave.employeeImg ? '' : leave.initials"
+                      t-att-style="leave.employeeImg ? 'background-image: url(' + leave.employeeImg + '); background-size: cover; background-position: center;' : ''" />
+                    <div class="wyn_hr_list_info">
+                      <div class="wyn_hr_list_name" t-esc="leave.employee" />
+                      <div class="wyn_hr_list_sub" t-esc="leave.type + '  ·  ' + leave.dates" />
+                    </div>
+                    <span t-attf-class="wyn_hr_badge #{leave.state}">
+                      <t t-esc="leave.stateLabel" />
+                    </span>
+                  </div>
+                </t>
+              </div>
+            </div>
+
+            <DashboardPagination
+              currentPage="state.leavePage"
+              totalPages="totalLeavePages"
+              onPageChange="(p) => this._changePage('leave', p)"
+            />
+          </div>
+          <div class="wyn_hr_panel">
+            <div class="wyn_hr_panel_header">
+              <span class="wyn_hr_panel_title">Pending Allocations</span>
+              <span class="wyn_hr_panel_badge" t-esc="state.pendingAllocations + ' Pending'" />
+            </div>
+            <div class="wyn_hr_panel_body">
+              <t t-if="state.allocationList.length === 0">
+                <div class="wyn_hr_chart_placeholder">
+                  <i class="fa fa-plus-square-o" />
+                  <span>No pending allocations</span>
+                </div>
+              </t>
+              <div class="d-flex flex-column">
+                <t t-foreach="state.allocationList" t-as="alloc" t-key="alloc.id">
+                  <div class="wyn_hr_list_row cursor-pointer"
+                    t-on-click="() => this._openAllocationRequest(alloc.id, alloc.employee)">
+                    <div class="wyn_hr_avatar" t-esc="alloc.employeeImg ? '' : alloc.initials"
+                      t-att-style="alloc.employeeImg ? 'background-image: url(' + alloc.employeeImg + '); background-size: cover; background-position: center;' : ''" />
+                    <div class="wyn_hr_list_info">
+                      <div class="wyn_hr_list_name" t-esc="alloc.employee" />
+                      <div class="wyn_hr_list_sub"
+                        t-esc="alloc.type + '  ·  ' + alloc.duration + ' Days'" />
+                    </div>
+                    <span t-attf-class="wyn_hr_badge #{alloc.state}">
+                      <t t-esc="alloc.stateLabel" />
+                    </span>
+                  </div>
+                </t>
+              </div>
+
+            </div>
+            <DashboardPagination
+              currentPage="state.allocationPage"
+              totalPages="totalAllocationPages"
+              onPageChange="(p) => this._changePage('allocation', p)"
+            />
+          </div>
+          <div class="wyn_hr_panel" t-if="state.recruitmentEnabled">
+            <div class="wyn_hr_panel_header">
+              <span class="wyn_hr_panel_title">Active Recruitment</span>
+              <span class="wyn_hr_panel_badge"
+                t-esc="state.totalRecruitingApps + ' Open Applications'" />
+            </div>
+            <div class="wyn_hr_panel_body">
+              <t t-if="state.jobPositions.length === 0">
+                <div class="wyn_hr_chart_placeholder">
+                  <i class="fa fa-briefcase" />
+                  <span>No active job positions found</span>
+                </div>
+              </t>
+              <div class="d-flex flex-column flex-grow-1">
+                <t t-foreach="state.jobPositions" t-as="job" t-key="job.id">
+                  <div class="wyn_hr_list_row cursor-pointer"
+                    t-on-click="() => this._openRecruitment(job.id)">
+                    <div class="wyn_hr_recruitment_icon">
+                      <i class="fa fa-briefcase" />
+                    </div>
+                    <div class="wyn_hr_list_info">
+                      <div class="wyn_hr_list_name" t-esc="job.name" />
+                      <div class="wyn_hr_list_sub" t-esc="job.target + ' Employees Targeted'" />
+                    </div>
+                    <span class="wyn_hr_badge progress-badge"
+                      t-att-style="'background: linear-gradient(90deg, #17b355 ' + (job.target > 0 ? (Math.min(job.app_count / job.target, 1) * 100) : 0) + '%, #f0f0f0 0%);'">
+                      <t t-esc="job.app_count + ' Applications'" />
+                    </span>
+                  </div>
+                </t>
+              </div>
+            </div>
+            <div class="wyn_hr_panel_footer" style="padding: 19px;">
+              <span t-on-click="() => this._openRecruitment()">View All Jobs <i
+                  class="fa fa-arrow-right ms-1" />
+              </span>
+            </div>
+          </div>
+          <div class="wyn_hr_panel">
+            <div class="wyn_hr_panel_header">
+              <span class="wyn_hr_panel_title">Departments</span>
+              <span class="wyn_hr_panel_badge"
+                t-esc="state.deptDistribution.length + ' Departments'" />
+            </div>
+            <div class="wyn_hr_panel_body" style="padding: 24px; position: relative;">
+              <t t-if="state.deptDistribution.length === 0">
+                <div class="wyn_hr_chart_placeholder">
+                  <i class="fa fa-pie-chart" />
+                  <span>No department data found</span>
+                </div>
+              </t>
+              <canvas t-else="" t-ref="deptChart" />
+            </div>
+          </div>
+          <div class="wyn_hr_panel">
+            <div class="wyn_hr_panel_header">
+              <span class="wyn_hr_panel_title">Gender Distribution</span>
+              <span class="wyn_hr_panel_badge"
+                t-esc="state.genderDistribution.length + ' Categories'" />
+            </div>
+            <div class="wyn_hr_panel_body" style="padding: 24px; position: relative;">
+              <t t-if="state.genderDistribution.length === 0">
+                <div class="wyn_hr_chart_placeholder">
+                  <i class="fa fa-venus-mars" />
+                  <span>No gender distribution data</span>
+                </div>
+              </t>
+              <canvas t-else="" t-ref="genderChart" />
+            </div>
+          </div>
+          <div class="wyn_hr_panel">
+            <div class="wyn_hr_panel_header" style="padding: 11px 11px 11px 20px;">
+              <span class="wyn_hr_panel_title">Nationality</span>
+              <div class="d-flex align-items-center gap-2">
+                <span class="wyn_hr_panel_badge"
+                  t-esc="state.nationalityDistribution.length + ' Categories'" />
+                <div class="wyn_hr_period_switch">
+                  <button
+                    t-attf-class="#{state.nationalityView === 'map' ? 'active' : ''}"
+                    t-on-click="() => this._switchNationalityView('map')"
+                  ><i class="fa fa-map" /></button>
+                  <button
+                    t-attf-class="#{state.nationalityView === 'donut' ? 'active' : ''}"
+                    t-on-click="() => this._switchNationalityView('donut')"
+                  ><i class="fa fa-pie-chart" /></button>
+                </div>
+                
+              </div>
+            </div>
+            <div class="wyn_hr_panel_body" style="padding: 24px; position: relative;">
+              <t t-if="state.nationalityDistribution.length === 0">
+                <div class="wyn_hr_chart_placeholder">
+                  <i class="fa fa-globe" />
+                  <span>No nationality data available</span>
+                </div>
+              </t>
+              <t t-else="">
+                <div t-if="state.nationalityView === 'map'" t-ref="nationalityChart" style="width: 100%; height: 100%;" />
+                <canvas t-else="" t-ref="nationalityChart" />
+              </t>
+            </div>
+
+          </div>
+          <div class="wyn_hr_panel">
+            <div class="wyn_hr_panel_header">
+              <span class="wyn_hr_panel_title">Employees by Location</span>
+              <LocationDropdown
+                selectedId="state.selectedLocationId"
+                options="state.workLocations"
+                onSelect="(id) => this.selectLocation(id)"
+              />
+            </div>
+            <div class="wyn_hr_panel_body">
+              <t t-if="state.locationEmployees.length === 0">
+                <div class="wyn_hr_chart_placeholder">
+                  <i class="fa fa-map-marker" />
+                  <span>No employees found in this location</span>
+                </div>
+              </t>
+              <div class="d-flex flex-column flex-grow-1">
+                <t t-foreach="state.locationEmployees" t-as="emp" t-key="emp.id">
+                  <div class="wyn_hr_list_row cursor-pointer"
+                    t-on-click="() => this._openEmployee(emp.id, emp.name)">
+                    <div class="wyn_hr_avatar" t-esc="emp.employeeImg ? '' : emp.initials"
+                      t-att-style="emp.employeeImg ? 'background-image: url(' + emp.employeeImg + '); background-size: cover; background-position: center;' : ''" />
+                    <div class="wyn_hr_list_info">
+                      <div class="wyn_hr_list_name" t-esc="emp.name" />
+                      <div class="wyn_hr_list_sub" t-esc="emp.job_title + '  ·  ' + emp.location" />
+                    </div>
+                  </div>
+                </t>
+              </div>
+            </div>
+            <DashboardPagination
+              currentPage="state.locationPage"
+              totalPages="totalLocationPages"
+              onPageChange="(p) => this._changePage('location', p)"
+            />
+          </div>
+        </div>
+      </t>
+    </div>
+  </t>
+
+</templates>

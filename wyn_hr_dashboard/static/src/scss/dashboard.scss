@@ -1,0 +1,602 @@
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap");
+
+$hr-primary: $o-brand-primary;
+$hr-primary-lt: rgba($o-brand-primary, 0.2);
+$hr-primary-hover: $o-brand-lightsecondary;
+$hr-dark: darken($o-brand-primary, 25%);
+$hr-muted: desaturate(lighten($o-brand-primary, 10%), 20%);
+$hr-radius: 12px;
+$hr-card-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+
+// ── Wrapper ─────────────────────────────────────────────────
+.wyn_hr_dashboard {
+  --hr-dark: #{$hr-dark};
+  padding: 24px;
+  min-height: 100%;
+  font-family: inherit;
+  overflow-y: auto;
+  overflow-y: overlay; // Visual "absolute" overlay scrollbar
+  max-height: 100%;
+  background: linear-gradient(
+    180deg,
+    white,
+    transparent,
+    transparent,
+    transparent,
+    transparent
+  );
+
+  // Custom "Floating" Scrollbar
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    &:hover {
+      background: rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  // Firefox support
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+
+  // ── Page header ───────────────────────────────────────────
+  .wyn_hr_dashboard_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+
+    h1 {
+      font-size: 30px;
+      font-weight: 700;
+      color: $hr-dark;
+      margin: 0;
+      font-family: "Caveat", cursive;
+    }
+
+    h1 span {
+      font-size: 50px;
+      color: darken($hr-primary, 10%);
+    }
+
+    .wyn_hr_dashboard_date_wrapper {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: end;
+
+      .wyn_hr_dashboard_day {
+        position: relative;
+        font-size: 25px;
+        font-weight: 500;
+        color: $hr-dark;
+        line-height: 1.1;
+        max-width: fit-content;
+      }
+
+      .wyn_hr_dashboard_date {
+        font-size: 14px;
+        color: $hr-dark;
+        margin-top: 4px;
+      }
+    }
+  }
+
+  // ── KPI Stat Cards ────────────────────────────────────────
+  .wyn_hr_stat_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .wyn_hr_stat_card {
+    background: white;
+    border-radius: $hr-radius;
+    padding: 20px 22px;
+    box-shadow: $hr-card-shadow;
+    border-left: 5px solid $hr-primary;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .wyn_hr_stat_icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background-color: $hr-primary-lt;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      i {
+        font-size: 20px;
+        color: $hr-primary;
+      }
+    }
+
+    .wyn_hr_stat_value {
+      font-size: 30px;
+      font-weight: 700;
+      color: $hr-dark;
+      line-height: 1;
+    }
+
+    .wyn_hr_stat_label {
+      font-size: 12px;
+      color: darken($hr-primary, 10%);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .wyn_hr_stat_trend {
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      &.up {
+        color: #2e7d32;
+      }
+      &.down {
+        color: #c62828;
+      }
+    }
+  }
+
+  // ── Two-column section ────────────────────────────────────
+  .wyn_hr_dashboard_row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+
+    @media (max-width: 1200px) {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  // ── Generic panel card ────────────────────────────────────
+  .wyn_hr_panel {
+    background: white;
+    border-radius: $hr-radius;
+    box-shadow: $hr-card-shadow;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 400px;
+    max-height: 400px;
+
+    @media (max-width: 900px) {
+      min-height: 400px;
+      max-height: 100%;
+    }
+
+    .wyn_hr_panel_header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+
+      &.graph {
+        padding: 11px 11px 11px 20px;
+      }
+
+      .wyn_hr_panel_title {
+        font-size: 14px;
+        font-weight: 500;
+        color: $hr-dark;
+      }
+
+      .wyn_hr_panel_badge {
+        font-size: 11px;
+        font-weight: 600;
+        background: $hr-primary-lt;
+        color: $hr-primary;
+        padding: 3px 10px;
+        border-radius: 20px;
+      }
+
+      .wyn_hr_location_dropdown_wrapper {
+        position: relative;
+        z-index: 100;
+
+        .rotate-180 {
+          transform: rotate(180deg);
+        }
+
+        .transition-all {
+          transition: all 0.2s ease-in-out;
+        }
+
+        .wyn_hr_custom_dropdown_menu {
+          position: absolute;
+          top: calc(100% + 8px);
+          right: 0;
+          min-width: 200px;
+          background: rgba(255, 255, 255, 0.98);
+          backdrop-filter: blur(10px);
+          border: 1px solid var(--border-color);
+          border-radius: 12px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+          padding: 8px;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          animation: dropIn 0.2s ease-out;
+
+          @keyframes dropIn {
+            from {
+              opacity: 0;
+              transform: translateY(-10px) scale(0.95);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
+          }
+        }
+
+        .wyn_hr_dropdown_item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 8px 12px;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.2s;
+          color: $hr-dark;
+          text-align: left;
+
+          span {
+            font-size: 12px;
+            font-weight: 500;
+          }
+
+          .wyn_hr_dropdown_count {
+            font-size: 10px;
+            color: #888;
+            font-weight: 400;
+            margin-top: 2px;
+          }
+
+          i {
+            font-size: 11px;
+            color: $hr-primary;
+          }
+
+          &:hover {
+            background: $hr-primary-lt;
+            color: $hr-primary;
+
+            .wyn_hr_dropdown_count {
+              color: $hr-primary;
+              opacity: 0.8;
+            }
+          }
+
+          &.active {
+            background: $hr-primary-lt;
+            color: $hr-primary;
+
+            span {
+              font-weight: 600;
+            }
+          }
+        }
+      }
+
+      .wyn_hr_period_switch {
+        display: flex;
+        background: #f1f1f1;
+        padding: 4px;
+        border-radius: 8px;
+        gap: 2px;
+
+        button {
+          border: none;
+          background: transparent;
+          padding: 4px 12px;
+          font-size: 11px;
+          font-weight: 600;
+          color: $hr-muted;
+          border-radius: 6px;
+          transition: all 0.2s ease;
+          cursor: pointer;
+
+          &.active {
+            background: white;
+            color: $hr-dark;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+          }
+
+          &:hover:not(.active) {
+            color: $hr-dark;
+          }
+        }
+      }
+    }
+  }
+
+  @keyframes wynFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  // ── Leave/Attendance list rows ────────────────────────────
+  .wyn_hr_list_row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.15s;
+    animation: wynFadeIn 0.25s ease-out forwards;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: $hr-primary-hover;
+    }
+
+    .wyn_hr_avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: $hr-primary-lt;
+      color: $hr-primary;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .wyn_hr_list_info {
+      flex: 1;
+      min-width: 0;
+
+      .wyn_hr_list_name {
+        font-size: 13px;
+        font-weight: 600;
+        color: $hr-dark;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .wyn_hr_list_sub {
+        font-size: 11px;
+        color: $hr-muted;
+      }
+    }
+
+    .wyn_hr_badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+
+      &.present {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+      &.absent {
+        background: #ffebee;
+        color: #c62828;
+      }
+      &.leave {
+        background: #fff8e1;
+        color: #f57f17;
+      }
+      &.approved {
+        background: #e3f2fd;
+        color: #1565c0;
+      }
+      &.progress-badge {
+        font-weight: 500;
+        color: $hr-dark !important;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #efefef;
+      }
+    }
+
+    .wyn_hr_recruitment_icon {
+      width: 36px;
+      height: 36px;
+      background: $hr-primary-lt;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 0px;
+      flex-shrink: 0;
+      i {
+        color: $hr-primary;
+        font-size: 18px;
+      }
+    }
+  }
+
+  .wyn_hr_panel_body {
+    flex-grow: 1;
+  }
+
+  .wyn_hr_panel_footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+
+    span {
+      font-size: 14px;
+      font-weight: 600;
+      color: $hr-primary;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: $hr-dark;
+      }
+    }
+  }
+
+  .wyn_hr_pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+
+    .wyn_hr_page_btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      background: $hr-primary-lt;
+      color: $hr-primary;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        background: $hr-dark;
+        color: white;
+        border-color: $hr-dark;
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.4;
+        background: #f5f5f5;
+      }
+
+      i {
+        font-size: 24px;
+      }
+    }
+
+    .wyn_hr_page_info {
+      font-size: 12px;
+      font-weight: 600;
+      color: $hr-muted;
+      min-width: 80px;
+      text-align: center;
+    }
+  }
+
+  // ── Department donut placeholder ──────────────────────────
+  .wyn_hr_chart_placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+    height: 100%;
+    gap: 16px;
+    color: $hr-muted;
+
+    i {
+      font-size: 48px;
+      color: $hr-primary-lt;
+    }
+
+    span {
+      font-size: 13px;
+    }
+  }
+
+  // ── Loading state ─────────────────────────────────────────
+  .wyn_hr_loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+    color: $hr-muted;
+    font-size: 14px;
+    gap: 8px;
+
+    i {
+      animation: wyn_spin 1s linear infinite;
+    }
+  }
+
+  @keyframes wyn_spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+.x_wd_display_underline {
+  background-image: url(https://odoocdn.com/openerp_website/static/src/img/graphics/underline.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center bottom 10%;
+}
+
+.x_wd_display_fireworks_01::before {
+  content: url(/wyn_hr_dashboard/static/src/img/firework_1.svg);
+  position: absolute;
+  top: auto;
+  left: -7.8rem;
+  bottom: -6.3rem;
+  right: auto;
+  pointer-events: none;
+  scale: 0.3;
+  rotate: -50deg;
+}
+
+.x_wd_display_fireworks_02::after {
+  content: url(/wyn_hr_dashboard/static/src/img/firework_2.svg);
+  position: absolute;
+  top: auto;
+  left: 100%;
+  bottom: 0;
+  right: auto;
+  pointer-events: none;
+}
+// ── amCharts Watermark Removal ───────────────────────────
+[t-ref="nationalityChart"] svg g[role="button"] {
+  display: none !important;
+}

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+
+  <t t-name="wyn_hr_dashboard.DashboardPagination">
+    <div class="wyn_hr_pagination" t-if="props.totalPages > 1">
+      <button class="wyn_hr_page_btn" t-att-disabled="props.currentPage === 1"
+        t-on-click="() => props.onPageChange(props.currentPage - 1)">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M10.8284 12.0007L15.7782 16.9504L14.364 18.3646L8 12.0007L14.364 5.63672L15.7782 7.05093L10.8284 12.0007Z"></path>
+        </svg>
+      </button>
+      <span class="wyn_hr_page_info"> Page <t t-esc="props.currentPage" /> of <t
+          t-esc="props.totalPages" />
+      </span>
+      <button class="wyn_hr_page_btn" t-att-disabled="props.currentPage === props.totalPages"
+        t-on-click="() => props.onPageChange(props.currentPage + 1)">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M13.1717 12.0007L8.22192 7.05093L9.63614 5.63672L16.0001 12.0007L9.63614 18.3646L8.22192 16.9504L13.1717 12.0007Z"></path>
+        </svg>
+      </button>
+    </div>
+  </t>
+
+</templates>
